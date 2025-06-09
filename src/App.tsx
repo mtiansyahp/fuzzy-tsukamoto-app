@@ -1,25 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Layout } from 'antd';
+import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
+import AppRoutes from './routes/AppRoutes';
+
+const { Header, Sider, Content } = Layout;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider collapsible>
+        <Sidebar />
+      </Sider>
+      <Layout>
+        <Header style={{ background: '#fff', padding: 0 }}>
+          <Navbar />
+        </Header>
+        <Content style={{ margin: '16px' }}>
+          <AppRoutes />
+        </Content>
+      </Layout>
+    </Layout>
   );
 }
 
