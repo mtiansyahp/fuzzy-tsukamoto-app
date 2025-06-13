@@ -40,11 +40,11 @@
       "b4": 1,
       "b5": 1,
       "a1": 0,
-      "a2": 1,
+      "a2": 0,
       "a3": 0,
-      "a4": 1,
-      "a5": 1,
-      "sertifikasi": 0,
+      "a4": 0,
+      "a5": 0,
+      "sertifikasi": 1,
       "ikut_pelatihan": 1,
       "umur": 29,
       "posisi": "Apoteker",
@@ -52,7 +52,8 @@
       "tempat_lahir": "Semarang",
       "tanggal_lahir": "1995-08-22",
       "no_telepon": "082112345678",
-      "jabatan": "Kepala Apotek"
+      "jabatan": "Kepala Apotek",
+      "statusAkun": "Aktif"
     },
     {
       "id": "3",
@@ -93,12 +94,12 @@
       "b3": 1,
       "b4": 1,
       "b5": 1,
-      "a1": 0,
-      "a2": 1,
-      "a3": 1,
+      "a1": 1,
+      "a2": 0,
+      "a3": 0,
       "a4": 1,
-      "a5": 0,
-      "sertifikasi": 0,
+      "a5": 1,
+      "sertifikasi": 1,
       "ikut_pelatihan": 0,
       "umur": 30,
       "posisi": "Radiografer",
@@ -106,7 +107,8 @@
       "tempat_lahir": "Surabaya",
       "tanggal_lahir": "1994-09-30",
       "no_telepon": "085212345678",
-      "jabatan": "Ahli Radiologi"
+      "jabatan": "Ahli Radiologi",
+      "statusAkun": "Aktif"
     },
     {
       "id": "5",
@@ -136,7 +138,59 @@
       "jabatan": "Kepala Departemen Gizi"
     }
   ],
-  "penilaian": [],
+  "penilaian": [
+    {
+      "id": "1-1",
+      "nama": "Andi Saputra",
+      "skor": 75,
+      "keterangan": "Baik",
+      "pelatihan_id": "1",
+      "perhitungan": {
+        "T1": 1,
+        "T2": 1,
+        "Pendidikan": 0,
+        "Umur": 1,
+        "Sertifikasi": 1,
+        "PernahPelatihan": 0,
+        "Jurusan": 1,
+        "Posisi": 1
+      }
+    },
+    {
+      "id": "1-2",
+      "nama": "Budi Hartono",
+      "skor": 41.67,
+      "keterangan": "Sangat Kurang",
+      "pelatihan_id": "1",
+      "perhitungan": {
+        "T1": 1,
+        "T2": 0.3333333333333333,
+        "Pendidikan": 0,
+        "Umur": 1,
+        "Sertifikasi": 0,
+        "PernahPelatihan": 1,
+        "Jurusan": 0,
+        "Posisi": 0
+      }
+    },
+    {
+      "id": "1-3",
+      "nama": "Citra Lestari",
+      "skor": 56.46,
+      "keterangan": "Kurang",
+      "pelatihan_id": "1",
+      "perhitungan": {
+        "T1": 1,
+        "T2": 0.6666666666666666,
+        "Pendidikan": 0,
+        "Umur": 0.85,
+        "Sertifikasi": 1,
+        "PernahPelatihan": 1,
+        "Jurusan": 0,
+        "Posisi": 0
+      }
+    }
+  ],
   "pelatihan": [
     {
       "nama_pelatihan": "Pelatihan Dasar IGD",
@@ -145,7 +199,9 @@
       "syarat": "Lulusan S1",
       "kualifikasi": "Perawat",
       "peserta": [
-        1
+        1,
+        2,
+        3
       ],
       "b1": 1,
       "b2": 1,

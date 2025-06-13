@@ -410,14 +410,18 @@ export default function PenilaianPelatihan() {
                 dataPegawai = pegawaiData;
             }
 
-            const pesertaIds = record.peserta.map(Number);
-            const pesertaDetail = dataPegawai.filter((p) =>
-                pesertaIds.includes(Number(p.id))
-            );
-
-            console.log('Pegawai:', dataPegawai);
-            console.log('PesertaIds:', pesertaIds);
-            console.log('Peserta ditemukan:', pesertaDetail);
+            const pesertaIds = parsePeserta(record.peserta);
+            const pesertaDetail = dataPegawai
+                .filter((p) => pesertaIds.includes(Number(p.id)))
+                .map((pegawai) => {
+                    const penilaian = penilaianData.find(
+                        (pn) => pn.nama === pegawai.nama && pn.pelatihan_id === record.id
+                    );
+                    return {
+                        ...pegawai,
+                        skor: penilaian?.skor ?? null,
+                    };
+                });
 
             setSelectedPeserta(pesertaDetail);
             setPesertaModalVisible(true);
@@ -426,6 +430,7 @@ export default function PenilaianPelatihan() {
             message.error('Gagal menampilkan peserta');
         }
     };
+
 
     const pelatihanColumns = [
         { title: 'Nama Pelatihan', dataIndex: 'nama_pelatihan' },
@@ -784,21 +789,25 @@ export default function PenilaianPelatihan() {
                     pagination={false}
                     bordered
                     columns={[
-                         { title: 'ID', dataIndex: 'id', key: 'id' },
+                        { title: 'ID', dataIndex: 'id', key: 'id' },
                         { title: 'Nama', dataIndex: 'nama', key: 'nama' },
                         { title: 'Jurusan', dataIndex: 'jurusan', key: 'jurusan' },
-                        {
-                            title: 'Pendidikan',
-                            dataIndex: 'pendidikan_terakhir',
-                            key: 'pendidikan_terakhir',
-                        },
+                        { title: 'Pendidikan', dataIndex: 'pendidikan_terakhir', key: 'pendidikan_terakhir' },
                         { title: 'Posisi', dataIndex: 'posisi', key: 'posisi' },
                         { title: 'Umur', dataIndex: 'umur', key: 'umur' },
+                        {
+                            title: 'Skor Penilaian',
+                            dataIndex: 'skor',
+                            key: 'skor',
+                            render: (val: number | null) =>
+                                val !== null ? `${val.toFixed(2)}%` : <i>Belum dinilai</i>,
+                        },
                     ]}
                     locale={{
                         emptyText: 'Tidak ada peserta ditemukan',
                     }}
                 />
+
             </Modal>
 
             <Modal
