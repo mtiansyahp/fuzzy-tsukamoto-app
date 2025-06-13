@@ -784,7 +784,7 @@ export default function PenilaianPelatihan() {
                     pagination={false}
                     bordered
                     columns={[
-                        { title: 'ID', dataIndex: 'id', key: 'id' },
+                         { title: 'ID', dataIndex: 'id', key: 'id' },
                         { title: 'Nama', dataIndex: 'nama', key: 'nama' },
                         { title: 'Jurusan', dataIndex: 'jurusan', key: 'jurusan' },
                         {

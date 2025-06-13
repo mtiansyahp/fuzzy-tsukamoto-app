@@ -136,42 +136,7 @@
       "jabatan": "Kepala Departemen Gizi"
     }
   ],
-  "penilaian": [
-    {
-      "id": "1-1",
-      "nama": "Andi Saputra",
-      "skor": 75,
-      "keterangan": "Baik",
-      "pelatihan_id": "1",
-      "perhitungan": {
-        "T1": 1,
-        "T2": 1,
-        "Pendidikan": 0,
-        "Umur": 1,
-        "Sertifikasi": 1,
-        "PernahPelatihan": 0,
-        "Jurusan": 1,
-        "Posisi": 1
-      }
-    },
-    {
-      "id": "2-2",
-      "nama": "Budi Hartono",
-      "skor": 87.5,
-      "keterangan": "Sangat Baik",
-      "pelatihan_id": "2",
-      "perhitungan": {
-        "T1": 1,
-        "T2": 1,
-        "Pendidikan": 0,
-        "Umur": 1,
-        "Sertifikasi": 1,
-        "PernahPelatihan": 1,
-        "Jurusan": 1,
-        "Posisi": 1
-      }
-    }
-  ],
+  "penilaian": [],
   "pelatihan": [
     {
       "nama_pelatihan": "Pelatihan Dasar IGD",
