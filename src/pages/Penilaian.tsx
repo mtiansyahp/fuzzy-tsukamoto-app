@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Table,
     Button,
@@ -11,6 +11,7 @@ import {
     message,
     Typography,
     Switch,
+    Collapse
 } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import axios from 'axios';
@@ -19,12 +20,16 @@ import dayjs from 'dayjs';
 const { Title } = Typography;
 
 interface Penilaian {
+    created_at: any;
+    updated_at: any;
     id: string;
     nama: string;
     skor: number;
     keterangan: string;
     pelatihan_id: string;
+    perhitungan: Record<string, number>;  // <— tambah ini
 }
+
 
 interface Pegawai {
     id: number;
@@ -77,6 +82,8 @@ interface Pelatihan {
 }
 
 export default function PenilaianPelatihan() {
+    const role = localStorage.getItem('userRole');
+    const isPegawai = role === 'pegawai';
     const [penilaianData, setPenilaianData] = useState<Penilaian[]>([]);
     const [pelatihanData, setPelatihanData] = useState<Pelatihan[]>([]);
     const [pegawaiData, setPegawaiData] = useState<Pegawai[]>([]);
@@ -101,6 +108,60 @@ export default function PenilaianPelatihan() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const summaryColumns = [
+        { title: 'Pelatihan', dataIndex: 'nama_pelatihan', key: 'nama_pelatihan' },
+        { title: 'Tanggal Proses', dataIndex: 'tanggal_proses', key: 'tanggal_proses' },
+        { title: 'Total Pegawai', dataIndex: 'total', key: 'total' },
+        {
+            title: 'Aksi',
+            key: 'aksi',
+            render: (_: any, row: any) => (
+                <Button
+                    icon={<EyeOutlined />}
+                    onClick={() => {
+                        setSelectedSummary(row);
+                        setSummaryModalVisible(true);
+                    }}
+                    type="link"
+                />
+            ),
+        },
+    ];
+
+
+    // state untuk summary
+    const [summaryModalVisible, setSummaryModalVisible] = useState(false);
+    const [selectedSummary, setSelectedSummary] = useState<{
+        nama_pelatihan: string;
+        tanggal_proses: string;
+        total: number;
+        scores: Penilaian[];
+    } | null>(null);
+
+    // build summaryData: satu entry per pelatihan_id
+    const summaryData = useMemo(() => {
+        // group penilaianData per pelatihan_id
+        const map = new Map<string, Penilaian[]>();
+        penilaianData.forEach(p => {
+            if (!map.has(p.pelatihan_id)) map.set(p.pelatihan_id, []);
+            map.get(p.pelatihan_id)!.push(p);
+        });
+
+        // for each grup, cari nama pelatihan + tanggal_proses + total
+        return Array.from(map.entries()).map(([pelId, grup]) => {
+            const pel = pelatihanData.find(pl => pl.id === pelId);
+            const tanggalProses = grup[0].created_at ?? grup[0].updated_at ?? '-';
+            return {
+                key: pelId,
+                nama_pelatihan: pel?.nama_pelatihan ?? pelId,
+                tanggal_proses: tanggalProses.split('T')[0],
+                total: grup.length,
+                scores: grup,
+            };
+        });
+    }, [penilaianData, pelatihanData]);
+
 
 
 
@@ -210,24 +271,31 @@ export default function PenilaianPelatihan() {
             title: 'Aksi',
             render: (_: any, record: Penilaian) => (
                 <Space>
-                    <Button onClick={() => handlePenilaianEdit(record)} type="link">
-                        Edit
-                    </Button>
                     <Button type="link" onClick={() => handleViewDetail(record)}>
                         View
                     </Button>
-                    <Popconfirm
-                        title="Yakin hapus?"
-                        onConfirm={() => handlePenilaianDelete(record.id)}
-                    >
-                        <Button type="link" danger>
-                            Hapus
-                        </Button>
-                    </Popconfirm>
+
+                    {/* hanya untuk atasan/admin */}
+                    {!isPegawai && (
+                        <>
+                            <Button type="link" onClick={() => handlePenilaianEdit(record)}>
+                                Edit
+                            </Button>
+                            <Popconfirm
+                                title="Yakin hapus?"
+                                onConfirm={() => handlePenilaianDelete(record.id)}
+                            >
+                                <Button type="link" danger>
+                                    Hapus
+                                </Button>
+                            </Popconfirm>
+                        </>
+                    )}
                 </Space>
             ),
         },
     ];
+
 
     // === PELATIHAN ===
     const showPelatihanModal = () => {
@@ -458,21 +526,27 @@ export default function PenilaianPelatihan() {
             title: 'Aksi',
             render: (_: any, record: Pelatihan) => (
                 <Space>
-                    <Button onClick={() => handlePelatihanEdit(record)} type="link">
-                        Edit
-                    </Button>
-                    <Popconfirm
-                        title="Yakin hapus?"
-                        onConfirm={() => handlePelatihanDelete(record.id)}
-                    >
-                        <Button type="link" danger>
-                            Hapus
-                        </Button>
-                    </Popconfirm>
+                    {/* hanya untuk atasan/admin */}
+                    {!isPegawai && (
+                        <>
+                            <Button type="link" onClick={() => handlePelatihanEdit(record)}>
+                                Edit
+                            </Button>
+                            <Popconfirm
+                                title="Yakin hapus?"
+                                onConfirm={() => handlePelatihanDelete(record.id)}
+                            >
+                                <Button type="link" danger>
+                                    Hapus
+                                </Button>
+                            </Popconfirm>
+                        </>
+                    )}
                 </Space>
             ),
         },
     ];
+
 
     /**
      * HITUNG keseluruhan skor menggunakan Tsukamoto:
@@ -652,34 +726,39 @@ export default function PenilaianPelatihan() {
     return (
         <div style={{ padding: 24 }}>
             <Title level={3}>Penilaian</Title>
-            <Button
+            {/* <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={showPenilaianModal}
                 style={{ marginBottom: 16 }}
             >
                 Tambah Penilaian
-            </Button>
+            </Button> */}
+            <Title level={3}>Hasil Penilaian</Title>
             <Table
-                columns={penilaianColumns}
-                dataSource={penilaianData}
-                rowKey="id"
-                bordered
+                columns={summaryColumns}
+                dataSource={summaryData}
                 loading={loading}
                 pagination={false}
+                bordered
             />
+
 
             <Title level={3} style={{ marginTop: 48 }}>
                 Pelatihan Rumah Sakit
             </Title>
-            <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={showPelatihanModal}
-                style={{ marginBottom: 16 }}
-            >
-                Tambah Pelatihan
-            </Button>
+            {/* TOMBOL TAMBAH hanya untuk atasan/admin */}
+            {!isPegawai && (
+                <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={showPelatihanModal}
+                    style={{ marginBottom: 16 }}
+                >
+                    Tambah Pelatihan
+                </Button>
+            )}
+
             <Table
                 columns={pelatihanColumns}
                 dataSource={pelatihanData}
@@ -687,6 +766,78 @@ export default function PenilaianPelatihan() {
                 bordered
                 loading={loading}
             />
+
+            <Modal
+                open={summaryModalVisible}
+                title={`Detail Penilaian: ${selectedSummary?.nama_pelatihan}`}
+                footer={null}
+                onCancel={() => setSummaryModalVisible(false)}
+                width={800}
+            >
+                {selectedSummary && (
+                    <Table<Penilaian>
+                        dataSource={selectedSummary.scores}
+                        rowKey="id"
+                        pagination={false}
+                        bordered
+                        // ————————— expandable untuk collapse/expand per baris —————————
+                        expandable={{
+                            // untuk tiap baris peserta, tampilkan detail perhitungan:
+                            expandedRowRender: score => {
+                                // ubah perhitungan menjadi array [{ key, value }]
+                                const details = Object.entries(score.perhitungan).map(([komp, val]) => ({
+                                    komp,
+                                    val,
+                                }));
+                                return (
+                                    <Table
+                                        dataSource={details}
+                                        rowKey="komp"
+                                        pagination={false}
+                                        size="small"
+                                        bordered
+                                        columns={[
+                                            {
+                                                title: 'Komponen',
+                                                dataIndex: 'komp',
+                                                key: 'komp',
+                                            },
+                                            {
+                                                title: 'Nilai',
+                                                dataIndex: 'val',
+                                                key: 'val',
+                                                render: (v: number) => v.toFixed(4),
+                                            },
+                                        ]}
+                                    />
+                                );
+                            },
+                            // selalu boleh di-expand
+                            rowExpandable: () => true,
+                        }}
+                        // ————————— kolom utama peserta —————————
+                        columns={[
+                            {
+                                title: 'Nama Pegawai',
+                                dataIndex: 'nama',
+                                key: 'nama',
+                            },
+                            {
+                                title: 'Skor (%)',
+                                dataIndex: 'skor',
+                                key: 'skor',
+                                render: (v: number) => `${v.toFixed(2)}%`,
+                            },
+                            {
+                                title: 'Keterangan',
+                                dataIndex: 'keterangan',
+                                key: 'keterangan',
+                            },
+                        ]}
+                    />
+                )}
+            </Modal>
+
 
             {/* Modal Penilaian */}
             <Modal
@@ -817,6 +968,10 @@ export default function PenilaianPelatihan() {
                 footer={null}
                 width={700}
             >
+
+                {/* Modal Summary Detail */}
+
+
                 {selectedDetail && (
                     <div>
                         <p>

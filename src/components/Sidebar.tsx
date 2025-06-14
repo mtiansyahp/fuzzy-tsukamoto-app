@@ -1,4 +1,5 @@
-import React from 'react';
+// src/components/Sidebar.tsx
+import React, { useState, useMemo } from 'react';
 import { Menu, Button } from 'antd';
 import {
     DashboardOutlined,
@@ -6,49 +7,59 @@ import {
     UserOutlined,
     MacCommandOutlined,
     LogoutOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
+
+const allMenuItems = [
+    { key: '/', icon: <DashboardOutlined />, label: 'Dashboard' },
+    { key: '/penilaian', icon: <TableOutlined />, label: 'Penilaian' },
+    { key: '/manajemen-user', icon: <UserOutlined />, label: 'Manajemen User' },
+    { key: '/about', icon: <MacCommandOutlined />, label: 'About' },
+];
 
 function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [collapsed, setCollapsed] = useState(false);
 
-    const menuItems = [
-        {
-            key: '/',
-            icon: <DashboardOutlined />,
-            label: 'Dashboard',
-        },
-        {
-            key: '/penilaian',
-            icon: <TableOutlined />,
-            label: 'Penilaian',
-        },
-        {
-            key: '/manajemen-user',
-            icon: <UserOutlined />,
-            label: 'Manajemen User',
-        },
-        {
-            key: '/about',
-            icon: <MacCommandOutlined />,
-            label: 'About',
-        },
-    ];
+    // Ambil role langsung dari localStorage
+    const role = localStorage.getItem('userRole') || 'pegawai';
+
+    // Tentukan menu yang boleh dilihat tiap role
+    const allowedKeysByRole: Record<string, string[]> = {
+        pegawai: ['/', '/penilaian', '/about'],
+        atasan: ['/', '/penilaian', '/about'],
+        admin: allMenuItems.map(item => item.key),
+    };
+
+    // Filter menu sesuai role
+    const menuItems = useMemo(
+        () =>
+            allMenuItems
+                .filter(item => allowedKeysByRole[role]?.includes(item.key))
+                .map(item => ({
+                    ...item,
+                    onClick: () => navigate(item.key),
+                })),
+        [role, navigate]
+    );
 
     const handleLogout = () => {
-        // Bersihkan token jika pakai auth
-        // localStorage.removeItem('token');
-        navigate('/'); // atau redirect ke /login
+        localStorage.clear();
+        navigate('/login');
     };
 
     return (
         <div
             style={{
-                height: '100%',
+                width: collapsed ? 80 : 200,
+                height: '100vh',
                 display: 'flex',
                 flexDirection: 'column',
                 backgroundColor: '#001529',
+                transition: 'width 0.2s',
             }}
         >
             {/* Logo */}
@@ -60,12 +71,14 @@ function Sidebar() {
                 }}
             >
                 <img
-                    src="/logo192.png"
+                    src="/logo.png"
                     alt="Logo"
                     style={{
-                        width: 48,
-                        height: 48,
-                        objectFit: 'contain',
+                        width: collapsed ? 40 : 40,
+                        height: 40,
+                        objectFit: 'cover',
+                        objectPosition: 'left center',
+                        transition: 'width 0.2s',
                     }}
                 />
             </div>
@@ -74,18 +87,20 @@ function Sidebar() {
             <Menu
                 theme="dark"
                 mode="inline"
+                inlineCollapsed={collapsed}
                 selectedKeys={[location.pathname]}
                 style={{ flex: 1, paddingTop: 12 }}
-                items={menuItems.map((item) => ({
-                    key: item.key,
-                    icon: item.icon,
-                    label: item.label,
-                    onClick: () => navigate(item.key),
-                }))}
+                items={menuItems}
             />
 
-            {/* Logout Button */}
-            <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            {/* Logout */}
+            <div
+                style={{
+                    marginTop: 'auto',
+                    padding: '16px',
+                    borderTop: '1px solid rgba(255,255,255,0.1)',
+                }}
+            >
                 <Button
                     type="primary"
                     icon={<LogoutOutlined />}
@@ -93,7 +108,7 @@ function Sidebar() {
                     block
                     onClick={handleLogout}
                 >
-                    Logout
+                    {!collapsed && 'Logout'}
                 </Button>
             </div>
         </div>

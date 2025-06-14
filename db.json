@@ -3,8 +3,9 @@
     {
       "id": "1",
       "email": "andi@rs.com",
-      "nama": "Andi Saputra",
       "password": "andi123",
+      "role": "pegawai",
+      "nama": "Andi Saputra",
       "jurusan": "Keperawatan",
       "pendidikan_terakhir": "S1",
       "b1": 1,
@@ -30,8 +31,9 @@
     {
       "id": "2",
       "email": "budi@rs.com",
-      "nama": "Budi Hartono",
       "password": "budi456",
+      "role": "atasan",
+      "nama": "Budi Hartono",
       "jurusan": "Farmasi",
       "pendidikan_terakhir": "D3",
       "b1": 1,
@@ -58,8 +60,9 @@
     {
       "id": "3",
       "email": "citra@rs.com",
-      "nama": "Citra Lestari",
       "password": "citra789",
+      "role": "pegawai",
+      "nama": "Citra Lestari",
       "jurusan": "Kebidanan",
       "pendidikan_terakhir": "S1",
       "b1": 1,
@@ -85,8 +88,9 @@
     {
       "id": "4",
       "email": "dina@rs.com",
-      "nama": "Dina Marwan",
       "password": "dina321",
+      "role": "pegawai",
+      "nama": "Dina Marwan",
       "jurusan": "Radiologi",
       "pendidikan_terakhir": "D3",
       "b1": 1,
@@ -113,8 +117,9 @@
     {
       "id": "5",
       "email": "eko@rs.com",
-      "nama": "Eko Susilo",
       "password": "eko654",
+      "role": "atasan",
+      "nama": "Eko Susilo",
       "jurusan": "Gizi",
       "pendidikan_terakhir": "S1",
       "b1": 1,
@@ -138,6 +143,14 @@
       "jabatan": "Kepala Departemen Gizi"
     }
   ],
+  "admin": [
+    {
+      "id": "99",
+      "email": "admin@rs.com",
+      "password": "admin123",
+      "role": "admin"
+    }
+  ],
   "penilaian": [
     {
       "id": "1-1",
@@ -159,15 +172,15 @@
     {
       "id": "1-2",
       "nama": "Budi Hartono",
-      "skor": 41.67,
-      "keterangan": "Sangat Kurang",
+      "skor": 50,
+      "keterangan": "Kurang",
       "pelatihan_id": "1",
       "perhitungan": {
         "T1": 1,
-        "T2": 0.3333333333333333,
+        "T2": 0,
         "Pendidikan": 0,
         "Umur": 1,
-        "Sertifikasi": 0,
+        "Sertifikasi": 1,
         "PernahPelatihan": 1,
         "Jurusan": 0,
         "Posisi": 0
@@ -193,6 +206,7 @@
   ],
   "pelatihan": [
     {
+      "id": "1",
       "nama_pelatihan": "Pelatihan Dasar IGD",
       "tanggal": "2024-05-10",
       "deskripsi": "Pelatihan dasar untuk tenaga IGD",
@@ -218,10 +232,10 @@
       "pendidikan_terakhir": "SMA",
       "jurusan": "Keperawatan",
       "posisi": "Perawat IGD",
-      "max_umur": 32,
-      "id": "1"
+      "max_umur": 32
     },
     {
+      "id": "2",
       "nama_pelatihan": "Manajemen Obat",
       "tanggal": "2024-06-01",
       "deskripsi": "Pelatihan pengelolaan dan distribusi obat",
@@ -245,8 +259,7 @@
       "pendidikan_terakhir": "SMA",
       "jurusan": "Farmasi",
       "posisi": "Apoteker",
-      "max_umur": 29,
-      "id": "2"
+      "max_umur": 29
     },
     {
       "id": "3",
