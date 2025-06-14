@@ -13,7 +13,7 @@ import {
     Switch,
     Collapse
 } from 'antd';
-import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
+import { PlusOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import dayjs from 'dayjs';
 
@@ -117,17 +117,32 @@ export default function PenilaianPelatihan() {
             title: 'Aksi',
             key: 'aksi',
             render: (_: any, row: any) => (
-                <Button
-                    icon={<EyeOutlined />}
-                    onClick={() => {
-                        setSelectedSummary(row);
-                        setSummaryModalVisible(true);
-                    }}
-                    type="link"
-                />
+                <Space>
+                    <Button
+                        icon={<EyeOutlined />}
+                        type="link"
+                        onClick={() => {
+                            setSelectedSummary(row);
+                            setSummaryModalVisible(true);
+                        }}
+                    />
+                    {!isPegawai && (
+                        <Popconfirm
+                            title="Yakin hapus semua hasil penilaian untuk pelatihan ini?"
+                            onConfirm={() => handleDeleteGroup(row.key as string)}
+                        >
+                            <Button
+                                type="text"
+                                danger
+                                icon={<DeleteOutlined />}
+                            />
+                        </Popconfirm>
+                    )}
+                </Space>
             ),
         },
     ];
+
 
 
     // state untuk summary
@@ -207,6 +222,22 @@ export default function PenilaianPelatihan() {
         }
     };
 
+    const handleDeleteGroup = async (pelatihanId: string) => {
+        try {
+            const idsToDelete = penilaianData
+                .filter(p => p.pelatihan_id === pelatihanId)
+                .map(p => p.id);
+            await Promise.all(
+                idsToDelete.map(id => axios.delete(`${baseUrl}/penilaian/${id}`))
+            );
+            message.success(`Deleted ${idsToDelete.length} penilaian`);
+            fetchData();
+        } catch {
+            message.error('Gagal menghapus penilaian');
+        }
+    };
+
+
     const handlePenilaianEdit = (record: Penilaian) => {
         setEditingPenilaian(record);
         penilaianForm.setFieldsValue(record);
@@ -285,9 +316,12 @@ export default function PenilaianPelatihan() {
                                 title="Yakin hapus?"
                                 onConfirm={() => handlePenilaianDelete(record.id)}
                             >
-                                <Button type="link" danger>
-                                    Hapus
-                                </Button>
+                                {/* icon‐only delete button */}
+                                <Button
+                                    type="text"
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                />
                             </Popconfirm>
                         </>
                     )}

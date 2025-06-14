@@ -202,6 +202,23 @@
         "Jurusan": 0,
         "Posisi": 0
       }
+    },
+    {
+      "id": "2-2",
+      "nama": "Budi Hartono",
+      "skor": 62.5,
+      "keterangan": "Kurang",
+      "pelatihan_id": "2",
+      "perhitungan": {
+        "T1": 1,
+        "T2": 0,
+        "Pendidikan": 0,
+        "Umur": 1,
+        "Sertifikasi": 0,
+        "PernahPelatihan": 1,
+        "Jurusan": 1,
+        "Posisi": 1
+      }
     }
   ],
   "pelatihan": [
